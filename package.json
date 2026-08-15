@@ -1,0 +1,20 @@
+{
+  "name": "az400-app",
+  "version": "1.0.0",
+  "description": "Minimal Node.js HTTP app used as the AZ-400 progressive lab's carry-through project.",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@ssh.dev.azure.com:v3/diegosouzauni/az400-lab/az400-app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
