@@ -1,0 +1,61 @@
+# Task 1.7: Azure Pipelines <-> GitHub repo.
+#
+# This pipeline's source is this GitHub repo (dssouzatilabs/az400-mirror), but the pipeline
+# DEFINITION itself is created and run in Azure Pipelines (org diegosouzauni, project
+# az400-lab) via "New pipeline > GitHub" - see study-plan/notes.md for the walkthrough and
+# the GitHub App install step, which is a portal-only, one-time authorization on the
+# dssouzatilabs org and can't be scripted.
+trigger:
+- main
+pr:
+- main
+
+resources:
+  repositories:
+  # Step 2: checkout of a second repo - this one is an Azure Repos git repo (az400-app,
+  # same org/project as the pipeline definition, so no service connection is needed), pulled
+  # into a pipeline whose own source is GitHub. Demonstrates the cross-product angle from
+  # both directions at once: GitHub repo triggers/hosts the pipeline, Azure Repos repo is
+  # checked out as a resource inside it.
+  - repository: app
+    type: git
+    name: az400-lab/az400-app
+    ref: refs/heads/main
+    # explicit: don't also trigger this pipeline on az400-app pushes - only the
+    # resources.pipelines trigger below (app-ci completion) should do that
+    trigger: none
+
+  pipelines:
+  # Step 2: the "reliably ordered dependency deployments" primitive - a completed run of
+  # app-ci (az400-app's own pipeline) triggers a run of THIS pipeline.
+  - pipeline: appCi
+    source: app-ci
+    trigger: true
+
+stages:
+- stage: HybridDemo
+  displayName: 'Hybrid run (Task 1.7 step 3)'
+  jobs:
+  - job: HostedJob
+    displayName: 'Microsoft-hosted (ubuntu-latest)'
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+    - checkout: app
+    - script: |
+        echo "-- self (az400-mirror, GitHub) --"
+        ls -la
+        echo "-- app (az400-app, Azure Repos, checked out as a second repo) --"
+        ls -la app
+      displayName: 'Confirm both repos checked out'
+
+  - job: SelfHostedJob
+    displayName: 'Self-hosted (lab-pool)'
+    pool:
+      name: lab-pool
+    steps:
+    - checkout: self
+    - script: |
+        echo "Running on self-hosted lab-pool agent: $(Agent.Name)"
+      displayName: 'Confirm self-hosted agent runs this job'

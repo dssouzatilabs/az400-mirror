@@ -1,0 +1,17 @@
+# yamllint config tuned for this repo's Azure Pipelines YAML.
+#
+# Azure Pipelines' own documentation examples consistently use "sequence at
+# the same indent as its parent key" (e.g. `jobs:` / `- job:`), which
+# yamllint's default preset flags as an indentation error. Match that
+# convention instead of fighting it: reformatting to satisfy the stricter
+# default would mean diverging from the docs this repo follows. Same config
+# as az400-app/.yamllint, for the same reason.
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 120
+  indentation:
+    spaces: 2
+    indent-sequences: false
