@@ -45,7 +45,7 @@ stages:
     - checkout: app
     - script: |
         echo "-- self (az400-mirror, GitHub) --"
-        ls -la
+        ls -la az400-mirror
         echo "-- app (az400-app, Azure Repos, checked out as a second repo) --"
         ls -la az400-app
       displayName: 'Confirm both repos checked out'
